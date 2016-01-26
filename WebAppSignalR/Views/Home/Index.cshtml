@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Say Hello</h2>
+
+<div id="messages"></div>
+<hr />
+<input type="text" id="myMessage" value="" />
+<button type="button" id="submit">Send!</button>
+
+@section JavaScript{
+    <script src="~/scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script type="text/javascript">
+        $(function () {
+            var hub = $.connection.messageHub;
+
+            //client method which can be called from the server
+            hub.client.hello = function (message) {
+                $("#messages").append("<p>" + message + "</p>");
+            };
+
+            // Wait for the connection
+            $.connection.hub.start().done(function () {
+
+                //click event handler to send the message
+                $("#submit").click(function () {
+                    var message = $("#myMessage").val();
+
+                    //invoke method
+                    hub.server.sayHello(message);
+
+                    //reset field
+                    $("#myMessage").val("");
+                });
+            });
+        });
+    </script>
+}
